@@ -1,0 +1,71 @@
+%????
+clc;
+clear;
+filename = 'train.csv';
+delimiter = ',';
+formatSpec = '%s%s%s%s%s%[^\n\r]';
+fileID = fopen(filename,'r');
+dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter,  'ReturnOnError', false);
+fclose(fileID);
+age = dataArray{:, 1};
+spectacleprescrip = dataArray{:, 2};
+astigmatism = dataArray{:, 3};
+tearprodrate = dataArray{:, 4};
+contactlenses = dataArray{:, 5};
+clearvars filename delimiter formatSpec fileID dataArray ans;
+traindata=[age,spectacleprescrip,astigmatism,tearprodrate,contactlenses];
+
+%??????
+% age(young,ppre,pre;1,2,3),
+% spectacle-prescrip(myope,hypermetrope;1,2)
+% astigmatism(yes,no;1,2)
+% tear-prod-rate(reduced,normal;1,2)
+[row,col]=size(traindata);
+Mtraindata=zeros(row-1,col-1);  %????????
+
+for i=1:1:row-1
+    for j=1:1:col
+        if(strcmp(traindata(i+1,j),'young'))  Mtraindata(i,j)='1';
+        elseif(strcmp(traindata(i+1,j),'pre-presbyopic'))  Mtraindata(i,j)=2; 
+        elseif(strcmp(traindata(i+1,j),'presbyopic'))  Mtraindata(i,j)=3;
+        elseif(strcmp(traindata(i+1,j),'myope'))  Mtraindata(i,j)=1;
+        elseif(strcmp(traindata(i+1,j),'hypermetrope'))  Mtraindata(i,j)=2;    
+        elseif(strcmp(traindata(i+1,j),'yes'))  Mtraindata(i,j)=1;
+        elseif(strcmp(traindata(i+1,j),'no'))  Mtraindata(i,j)=2;
+        elseif(strcmp(traindata(i+1,j),'reduced'))  Mtraindata(i,j)=1;
+        elseif(strcmp(traindata(i+1,j),'normal'))  Mtraindata(i,j)=2;
+        end
+    end
+end
+
+%??3?
+K = 3;
+max_iterations = 50;
+centroids = initCentroids(Mtraindata, K);
+
+for i=1:max_iterations
+  indices = getClosestCentroids(Mtraindata, centroids);
+  centroids = computeCentroids(Mtraindata, indices, K);
+end
+
+%disp(indices);
+
+%????????result.csv
+for i=1:1:row-1
+    if(indices(i,1)==1)
+    traindata(i+1,5)='?';
+    elseif(indices(i,1)==2)
+    traindata(i+1,5)='???';
+    elseif(indices(i,1)==3)
+    traindata(i+1,5)='???';
+    end    
+end
+disp(traindata);
+FileID = fopen('result.csv', 'w'); 
+for i=1:1:row
+    fprintf(FileID, '%s  %s  %s   %s  %s\n', traindata{i, :}); 
+end
+fclose(FileID); 
+
+
+

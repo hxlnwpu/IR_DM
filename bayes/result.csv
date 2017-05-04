@@ -1,0 +1,7 @@
+age  spectacle-prescrip  astigmatism   tear-prod-rate contact-lenses
+young  myope  yes   reduced none
+young  hypermetrope  no   reduced none
+pre-presbyopic  myope  no   normal soft
+pre-presbyopic  myope  yes   normal hard
+presbyopic  myope  yes   reduced none
+presbyopic  hypermetrope  no   normal none
